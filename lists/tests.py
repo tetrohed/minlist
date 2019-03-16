@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import resolve, reverse
 from lists.views import home_page
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 import unittest
 
 class HomePageTest(TestCase):
@@ -11,10 +12,10 @@ class HomePageTest(TestCase):
         self.assertEqual(found.func, home_page)
 
     def test_home_page_returns_correct_html(self):
-        request = HttpRequest()
-        response = home_page(request)
-        html = response.content.decode('utf-8')
-        self.assertTrue(html.startswith('<html>'))
-        self.assertIn('<title>To-Do lists</title>', html)
-        self.assertTrue(html.endswith('</html>'))
+        response = self.client.get(reverse('lists:home'))
+        self.assertTemplateUsed(response, 'lists/home.html')
 
+    def test_can_save_a_POST_request(self):
+        response = self.client.post(reverse('lists:home'), data={'item_text': 'A new list item'})
+        self.assertTemplateUsed(response, 'lists/home.html')
+        self.assertIn('A new list item', response.content.decode())
