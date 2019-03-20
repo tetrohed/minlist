@@ -27,23 +27,30 @@ class NewListTests(TestCase):
 
     def test_redirects_after_POST(self):
         response = self.client.post(reverse('lists:new_list'), data={'item_text': 'A new list item'})
-        self.assertRedirects(response, reverse('lists:view_list'))
+        self.assertRedirects(response, reverse('lists:view_list', kwargs={'list_id': 1}))
 
 
 class ListViewTests(TestCase):
 
-    def test_display_all_list_items(self):
+    def test_displays_items_only_for_the_corresponding_list(self):
         list_ = List.objects.create()
         Item.objects.create(text='item 1', list=list_)
         Item.objects.create(text='item 2', list=list_)
 
-        response = self.client.get(reverse('lists:view_list'))
+        otherList = List.objects.create()
+        Item.objects.create(text='other item 1', list=otherList)
+        Item.objects.create(text='other item 2', list=otherList)
+
+        response = self.client.get(reverse('lists:view_list', kwargs={'list_id': list_.id}))
 
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
+        self.assertNotContains(response, 'other item 1')
+        self.assertNotContains(response, 'other item 2')
 
     def test_uses_list_template(self):
-        response = self.client.get(reverse('lists:view_list'))
+        list_ = List.objects.create()
+        response = self.client.get(reverse('lists:view_list', kwargs={'list_id': list_.id}))
         self.assertTemplateUsed(response, 'lists/list.html')
 
 class ListAndItemModelTest(TestCase):
