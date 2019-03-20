@@ -9,7 +9,7 @@ import unittest
 class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
-        self.MAX_WAIT = 10
+        self.MAX_WAIT = 3
         self.browser = webdriver.Chrome()
 
     def tearDown(self):
@@ -33,7 +33,7 @@ class NewVisitorTest(LiveServerTestCase):
                     raise e
                 time.sleep(.5)
 
-    def test_can_start_a_list_and_retrieve_it_later(self):
+    def test_can_start_a_list_for_one_user(self):
         self.browser.get(self.live_server_url + '/lists')
         self.assertIn('To-Do', self.browser.title)
 
@@ -54,3 +54,33 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_row_in_list_table('1: buy a tdd book and learn about django')
         self.check_for_row_in_list_table('2: just try javascript and you will learn it')
 
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        self.browser.get(self.live_server_url + '/lists')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('call amy')
+        inputbox.send_keys(Keys.ENTER)
+
+        self.wait_for_row_in_list_table('1: call amy')
+
+        edith_list_url = self.browser.current_url
+        self.assertRegex(edith_list_url, '/lists/.+')
+
+        self.browser.quit()
+        self.browser = webdriver.Chrome()
+
+        self.browser.get(self.live_server_url + '/lists')
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn(page_text, 'call amy')
+
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('buy milk')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('buy milk')
+
+        francis_list_url = self.browser.current_url
+        self.assertRegex(francis_list_url, 'lists/.+')
+        self.assertNotEqual(francis_list_url, edith_list_url)
+
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn(page_text, 'call amy')
+        self.assertIn(page_text, 'buy milk')
