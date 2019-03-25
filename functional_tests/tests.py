@@ -15,6 +15,18 @@ class NewVisitorTest(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def test_layout_and_styling(self):
+        self.browser.get(self.live_server_url + '/lists')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 600, delta=10)
+
+        inputbox.send_keys('testing')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: testing')
+
+        inputbox = self.browser.find_element('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x'] + inputbox.location['width'] / 2, 600, delta=10)
+
     def check_for_row_in_list_table(self, row_text):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
