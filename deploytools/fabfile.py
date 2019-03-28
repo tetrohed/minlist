@@ -9,7 +9,7 @@ def deploy():
     site_folder = f'/home/{env.user}/websites/{env.host}'
     run(f'mkdir -p {site_folder}')
     with cd(site_folder):
-        _get_latest_source(repo_url)
+        _get_latest_source(repo_url.decode("utf-8"))
         _update_virtualenv()
         _create_or_update_dotenv()
         _update_database()
