@@ -12,6 +12,7 @@ def deploy():
         _get_latest_source(repo_url.decode("utf-8"))
         _update_virtualenv()
         _create_or_update_dotenv()
+        _update_static_files()
         _update_database()
 
 def _get_latest_source(repo_url):
