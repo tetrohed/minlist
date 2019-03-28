@@ -1,15 +1,13 @@
 import random
 import subprocess
 from fabric.contrib.files import append, exists
-from fabric.api import cd, env, local
-
-
-completedProcess = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True)
-REPO_URL = completedProcess.stdout.strip()
+from fabric.api import cd, env, local, run
 
 def deploy():
+    completedProcess = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True)
+    REPO_URL = completedProcess.stdout.strip()
     site_folder = f'/home/{env.user}/websites/{env.host}'
-    run(f'mkdir -p {site_folter}')
+    run(f'mkdir -p {site_folder}')
     with cd(site_folder):
         _get_latest_source()
         _update_virtualenv()
@@ -19,7 +17,7 @@ def deploy():
 def _get_latest_source():
     if exists('.git'):
         run('git fetch')
-    else
+    else:
         run('git clone {REPO_URL} .')
 
     current_commit = local('git log -n l --format=%H', capture=True)
