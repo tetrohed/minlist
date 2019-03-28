@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn server for minlist-staging.arminjazi.com
+
+[Service]
+Restart=on-failure
+User=armin65
+WorkingDirectory=/home/armin65/websites/www.minlist-staging.arminjazi.com
+EnvironmentFile=/home/armin65/websites/www.minlist-staging.arminjazi.com/.env
+
+ExecStart=/home/armin65/websites/www.minlist-staging.arminjazi.com/virtualenv/bin/gunicorn \
+    --bind unix:/tmp/minlist-staging.arminjazi.com.socket \
+    minlist.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
