@@ -5,20 +5,20 @@ from fabric.api import cd, env, local, run
 
 def deploy():
     completedProcess = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True)
-    REPO_URL = completedProcess.stdout.strip()
+    repo_url = completedProcess.stdout.strip()
     site_folder = f'/home/{env.user}/websites/{env.host}'
     run(f'mkdir -p {site_folder}')
     with cd(site_folder):
-        _get_latest_source()
+        _get_latest_source(repo_url)
         _update_virtualenv()
         _create_or_update_dotenv()
         _update_database()
 
-def _get_latest_source():
+def _get_latest_source(repo_url):
     if exists('.git'):
         run('git fetch')
     else:
-        run('git clone {REPO_URL} .')
+        run('git clone {repo_url} .')
 
     current_commit = local('git log -n l --format=%H', capture=True)
     run(f'git reset --hard {current_commit}')
