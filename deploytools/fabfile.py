@@ -6,6 +6,7 @@ from fabric.api import cd, env, local, run
 def deploy():
     completedProcess = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True)
     repo_url = completedProcess.stdout.strip()
+    print(repo_url)
     site_folder = f'/home/{env.user}/websites/{env.host}'
     run(f'mkdir -p {site_folder}')
     with cd(site_folder):
@@ -15,6 +16,7 @@ def deploy():
         _update_database()
 
 def _get_latest_source(repo_url):
+    print(repo_url)
     if exists('.git'):
         run('git fetch')
     else:
