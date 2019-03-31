@@ -33,9 +33,9 @@ class ListItemValidationTestCase(FunctionalTestCase):
             self.assertEqual(self.browser.find_element_by_css_selector('.has-error').text,
                 "You can't have an empty list item"))
 
-        self.browser.find_element_by_id('id_new_item').send_keys('Buy something for the kids birthday')
+        self.browser.find_element_by_id('id_new_item').send_keys('Buy something else for the kids birthday')
         self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: Buy somehting for the kids birthday')
+        self.wait_for_row_in_list_table('2: Buy something else for the kids birthday')
 
         
 

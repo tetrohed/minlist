@@ -36,7 +36,7 @@ class NewListTests(TestCase):
         self.assertRedirects(response, reverse(
             'lists:view_list', kwargs={'list_id': 1}))
 
-    def test_validation_errors_are_sent_bakc_to_home_page_template(self):
+    def test_validation_errors_are_sent_back_to_home_page_template(self):
         response = self.client.post(reverse('lists:new_list'), data={
                                     'item_text': ''})
 
@@ -107,3 +107,13 @@ class ListViewTests(TestCase):
 
         self.assertRedirects(response, reverse(
             'lists:view_list', kwargs={'list_id': 1}))
+
+    def test_validation_errors_are_sent_back_to_lists_page(self):
+        list_ = List.objects.create()
+        response = self.client.post(reverse('lists:view_list', kwargs={'list_id': list_.id}),
+                                    data={'item_text': ''})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/list.html')
+        expected_error = "You can't have an empty list item"
+        self.assertContains(response, escape(expected_error))
