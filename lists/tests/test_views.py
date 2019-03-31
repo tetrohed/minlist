@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.test import TestCase
 from django.urls import resolve, reverse
+from django.utils.html import escape
 
 from lists.models import Item, List
 from lists.views import home_page
@@ -34,6 +35,22 @@ class NewListTests(TestCase):
                                     'item_text': 'A new list item'})
         self.assertRedirects(response, reverse(
             'lists:view_list', kwargs={'list_id': 1}))
+
+    def test_validation_errors_are_sent_bakc_to_home_page_template(self):
+        response = self.client.post(reverse('lists:new_list'), data={
+                                    'item_text': ''})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/home.html')
+        expected_error = "You can't have an empty list item"
+        self.assertContains(response, escape(expected_error))
+
+    def test_invalid_items_are_not_saved(self):
+        response = self.client.post(reverse('lists:new_list'), data={
+                                    'item_text': ''})
+        
+        self.assertEqual(List.objects.count(), 0)
+        self.assertEqual(Item.objects.count(), 0)
 
 
 class NewItemTests(TestCase):
