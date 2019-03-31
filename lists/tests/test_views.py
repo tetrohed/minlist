@@ -48,33 +48,9 @@ class NewListTests(TestCase):
     def test_invalid_items_are_not_saved(self):
         response = self.client.post(reverse('lists:new_list'), data={
                                     'item_text': ''})
-        
+
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
-
-
-class NewItemTests(TestCase):
-
-    def test_can_save_a_POST_request_to_an_existing_list(self):
-        other_list = List.objects.create()
-        correct_list = List.objects.create()
-
-        self.client.post(reverse('lists:add_item', kwargs={'list_id': correct_list.id}),
-                         data={'item_text': 'A new item for an existing list'})
-
-        self.assertEqual(Item.objects.count(), 1)
-        new_item = Item.objects.first()
-        self.assertEqual(new_item.text, 'A new item for an existing list')
-        self.assertEqual(new_item.list, correct_list)
-
-    def test_redirects_to_list_view(self):
-        list_ = List.objects.create()
-
-        response = self.client.post(reverse('lists:add_item', kwargs={'list_id': list_.id}),
-                                    data={'item_text': 'A new item for list'})
-
-        self.assertRedirects(response, reverse(
-            'lists:view_list', kwargs={'list_id': 1}))
 
 
 class ListViewTests(TestCase):
@@ -110,3 +86,24 @@ class ListViewTests(TestCase):
             reverse('lists:view_list', kwargs={'list_id': correct_list.id}))
 
         self.assertEqual(response.context['list'], correct_list)
+
+    def test_can_save_a_POST_request_to_an_existing_list(self):
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+
+        self.client.post(reverse('lists:view_list', kwargs={'list_id': correct_list.id}),
+                         data={'item_text': 'A new item for an existing list'})
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new item for an existing list')
+        self.assertEqual(new_item.list, correct_list)
+
+    def test_POST_redirects_to_list_view(self):
+        list_ = List.objects.create()
+
+        response = self.client.post(reverse('lists:view_list', kwargs={'list_id': list_.id}),
+                                    data={'item_text': 'A new item for list'})
+
+        self.assertRedirects(response, reverse(
+            'lists:view_list', kwargs={'list_id': 1}))
