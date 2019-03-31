@@ -1,41 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.common.exceptions import WebDriverException
+import os
 import time
 import unittest
-import os
+
+from testing.base import FunctionalTestCase
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
-
-    def setUp(self):
-        self.MAX_WAIT = 3
-        self.browser = webdriver.Chrome()
-        staging_server = os.environ.get('STAGING_SERVER')
-        if staging_server:
-            self.live_server_url = 'http://' + staging_server
-
-    def tearDown(self):
-        self.browser.quit()
-
-    def check_for_row_in_list_table(self, row_text):
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(row_text, [row.text for row in rows])
-
-    def wait_for_row_in_list_table(self, row_text):
-        start_time = time.time()
-        while True:
-            try:
-                table = self.browser.find_element_by_id('id_list_table')
-                rows = table.find_elements_by_tag_name('tr')
-                self.assertIn(row_text, [row.text for row in rows])
-                return 
-            except (AssertionError, WebDriverException) as e:
-                if time.time() - start_time > self.MAX_WAIT:
-                    raise e
-                time.sleep(.5)
+class ListCreationTestCase(FunctionalTestCase):
 
     def test_can_start_a_list_for_one_user(self):
         self.browser.get(self.live_server_url + '/lists')
@@ -88,4 +63,3 @@ class NewVisitorTest(StaticLiveServerTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('call amy', page_text)
         self.assertIn('buy milk', page_text)
-
