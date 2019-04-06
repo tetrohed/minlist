@@ -21,8 +21,7 @@ def _get_latest_source(repo_url):
     else:
         run(f'git clone {repo_url} .')
 
-    current_commit = local('git log -n l --format=%H', capture=True)
-    run(f'git reset --hard {current_commit}')
+    run(f'git pull origin')
 
 def _update_virtualenv():
     if not exists('virtualenv/bin/pip'):
