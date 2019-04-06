@@ -4,7 +4,7 @@ from fabric.contrib.files import append, exists
 from fabric.api import cd, env, local, run
 
 
-def deploy(debug='false'):
+def deploy():
     completedProcess = subprocess.run(
         ["git", "remote", "get-url", "origin"], capture_output=True)
     repo_url = completedProcess.stdout.strip()
@@ -13,7 +13,7 @@ def deploy(debug='false'):
     with cd(site_folder):
         _get_latest_source(repo_url.decode("utf-8"))
         _update_virtualenv()
-        _create_dotenv(debug)
+        _create_dotenv()
         _update_static_files()
         _update_database()
 
@@ -33,10 +33,9 @@ def _update_virtualenv():
         run('./virtualenv/bin/pip install -r requirements.txt')
 
 
-def _create_dotenv(debug):
+def _create_dotenv():
     run('rm .env')
-    if (debug == 'false'):
-        append('.env', 'DJANGO_DEBUG_FALSE=y')
+    append('.env', 'DJANGO_DEBUG_FALSE=y')
     append('.env', f'SITENAME={env.host}')
     current_contents = run('cat .env')
     if 'DJANGO_SECRET_KEY' not in current_contents:
