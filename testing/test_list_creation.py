@@ -18,14 +18,14 @@ class ListCreationTestCase(FunctionalTestCase):
 
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('To-Do', header_text)
-        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box = self.get_item_input_box()
         self.assertEqual(input_box.get_attribute('placeholder'),'Enter a to-do item')
 
         input_box.send_keys('buy a tdd book and learn about django')
         input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: buy a tdd book and learn about django')
 
-        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box = self.get_item_input_box()
         input_box.send_keys('just try javascript and you will learn it')
         input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('2: just try javascript and you will learn it')
@@ -35,7 +35,7 @@ class ListCreationTestCase(FunctionalTestCase):
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
         self.browser.get(self.live_server_url + '/lists')
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox = self.get_item_input_box()
         inputbox.send_keys('call amy')
         inputbox.send_keys(Keys.ENTER)
 
@@ -51,7 +51,7 @@ class ListCreationTestCase(FunctionalTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('call amy', page_text)
 
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox = self.get_item_input_box()
         inputbox.send_keys('buy milk')
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: buy milk')

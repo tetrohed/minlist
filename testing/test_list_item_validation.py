@@ -15,26 +15,26 @@ class ListItemValidationTestCase(FunctionalTestCase):
     def test_cannot_add_empty_list_items(self):
         self.browser.get(self.live_server_url + '/lists')
 
-        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box = self.get_item_input_box()
 
         input_box.send_keys('')
         input_box.send_keys(Keys.ENTER)
 
         self.wait_for(lambda: 
-            self.assertEqual(self.browser.find_element_by_css_selector('.has-error').text,
-                "You can't have an empty list item"))
+            self.browser.find_element_by_css_selector('#id_text:invalid'))
 
-        self.browser.find_element_by_id('id_new_item').send_keys('Buy something for the kids birthday')
-        self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
+        self.get_item_input_box().send_keys('Buy something for the kids birthday')
+        self.wait_for(lambda: 
+            self.browser.find_elements_by_css_selector('#id_text:valid'))
+        self.get_item_input_box().send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy something for the kids birthday')
 
-        self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
+        self.get_item_input_box().send_keys(Keys.ENTER)
         self.wait_for(lambda: 
-            self.assertEqual(self.browser.find_element_by_css_selector('.has-error').text,
-                "You can't have an empty list item"))
+            self.browser.find_elements_by_css_selector('#id_text:invalid'))
 
-        self.browser.find_element_by_id('id_new_item').send_keys('Buy something else for the kids birthday')
-        self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
+        self.get_item_input_box().send_keys('Buy something else for the kids birthday')
+        self.get_item_input_box().send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('2: Buy something else for the kids birthday')
 
         
