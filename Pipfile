@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+
+[packages]
+selenium = "*"
+django = "==2.1.7"
+gunicorn = "==19.9.0"
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+makemigrations = "python ./manage.py makemigrations"
+migrate = "python ./manage.py migrate"
+server = "python ./manage.py runserver"
+test = "python ./manage.py test"

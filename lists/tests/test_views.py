@@ -144,3 +144,4 @@ class ListViewTests(TestCase):
         response = self.post_invalid_input()
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
+    
